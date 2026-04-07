@@ -1,6 +1,13 @@
 version: 2
-updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+  updates:
+    # Keep GitHub Actions up to date
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+        interval: "daily"
+
+    # Add npm ecosystem
+    - package-ecosystem: "npm"
+      directory: "/"
+      schedule:
+        interval: "daily"
