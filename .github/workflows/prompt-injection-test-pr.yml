@@ -125,7 +125,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_VERTEX_AI_KEY }}
 
       - name: Run Claude Code Action
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@v1.0.183
         with:
           # Use Vertex AI instead of direct Anthropic API
           use_vertex: "true"
