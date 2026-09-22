@@ -35,6 +35,26 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - run: echo "v4.4.0 SHA checkout succeeded - should have protection"
       
+  test-v4-tag-old:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork (v4.3.0 tag - pre-backport)
+        uses: actions/checkout@v4.3.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - run: echo "v4.3.0 tag checkout succeeded - NO protection"
+
+  test-v4-tag-new:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork (v4.4.0 tag - with backport)
+        uses: actions/checkout@v4.4.0
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - run: echo "v4.4.0 tag checkout - should have protection"    
+      
   test-v5:
     runs-on: ubuntu-latest
     steps:
