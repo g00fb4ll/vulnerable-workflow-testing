@@ -15,7 +15,7 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - run: echo "v4 checkout succeeded - NO protection"
       
-   test-v4-sha-old:
+  test-v4-sha-old:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout fork (v4.3.0 SHA - pre-backport)
