@@ -1,14 +1,57 @@
+name: Test checkout versions fork protection
 
 on:
   pull_request_target:
-    types: [opened, reopened, synchronize]
+    types: [opened, synchronize]
 
 jobs:
-  test-job:
+  test-v4:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo test
-        run: |
-          echo "pull_request workflow is running..."
-          echo "Event: ${{ github.event_name }}"
-          echo "Actor: ${{ github.actor }}"
+      - name: Checkout fork (v4)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - run: echo "v4 checkout succeeded - NO protection"
+
+  test-v5:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork (v5)
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - run: echo "v5 checkout succeeded - NO protection"
+
+  test-v6:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork (v6)
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - run: echo "v6 checkout succeeded - NO protection"
+
+  test-v7:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork (v7)
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - run: echo "v7 checkout succeeded - NO protection"
+
+  test-v7-opted-in:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork (v7 with allow-unsafe)
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          allow-unsafe-pr-checkout: true
+      - run: echo "v7 with allow-unsafe succeeded"
