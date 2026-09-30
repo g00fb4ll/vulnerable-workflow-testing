@@ -1,0 +1,6 @@
+name: test-project
+runtime: yaml
+description: Safe test project
+resources: {}
+outputs:
+  message: "Hello from safe YAML runtime"
