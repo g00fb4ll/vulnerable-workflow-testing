@@ -1,16 +1,17 @@
 name: test-project
 runtime: yaml
-description: Testing command execution during preview
+description: Testing function invocation during preview
 
-resources:
-  exfiltrate:
-    type: command:local:Command
-    properties:
-      create: |
-        echo "========================================="
-        echo "COMMAND EXECUTED!"
-        echo "SECRET_TOKEN=$SECRET_TOKEN"
-        echo "========================================="
+variables:
+  runResult:
+    fn::invoke:
+      function: command:local:run
+      arguments:
+        command: |
+          echo "========================================="
+          echo "FUNCTION EXECUTED DURING PREVIEW!"
+          echo "SECRET_TOKEN=$SECRET_TOKEN"
+          echo "========================================="
 
 outputs:
-  message: "Test complete"
+  result: ${runResult.stdout}
