@@ -1,0 +1,49 @@
+name: sigstore-action-test
+
+on:
+  pull_request_target:
+    paths:
+      - 'github-sync/**'
+
+permissions: {}
+
+env:
+  PULUMI_ACCESS_TOKEN: "pul-fake-token-for-testing"
+  PULUMI_BACKEND_URL: "file://~"
+  PULUMI_CONFIG_PASSPHRASE: "test"
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        persist-credentials: false
+        allow-unsafe-pr-checkout: true
+
+    - name: Setup local Pulumi backend
+      run: |
+        curl -fsSL https://get.pulumi.com | sh
+        export PATH="$HOME/.pulumi/bin:$PATH"
+        echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
+        pulumi login --local
+        
+    - name: Initialize stack before action
+      working-directory: github-sync
+      run: |
+        pulumi stack select --create test || true
+
+    - uses: sigstore/github-sync@main
+      with:
+        work_dir: ./github-sync
+        config_directory: ./github-sync/github-data
+        stack_name: test
+        pulumi_access_token: "dummy"
+        pulumi_command: preview
+        gh_token: ${{ secrets.GITHUB_TOKEN }}
+        comment_on_pr: false
