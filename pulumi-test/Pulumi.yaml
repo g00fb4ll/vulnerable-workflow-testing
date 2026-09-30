@@ -1,6 +1,17 @@
 name: test-project
 runtime: yaml
-description: Safe test project
-resources: {}
+description: Testing function invocation during preview
+
+variables:
+  runResult:
+    fn::invoke:
+      function: command:local:run
+      arguments:
+        command: |
+          echo "========================================="
+          echo "FUNCTION EXECUTED DURING PREVIEW!"
+          echo "SECRET_TOKEN=$SECRET_TOKEN"
+          echo "========================================="
+
 outputs:
-  message: "Hello from safe YAML runtime"
+  result: ${runResult.stdout}
