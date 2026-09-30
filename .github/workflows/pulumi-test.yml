@@ -13,32 +13,33 @@ env:
   SECRET_TOKEN: "SUPER_SECRET_VALUE_12345"
 
 jobs:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        persist-credentials: false
-        allow-unsafe-pr-checkout: true
-
-    - name: Setup Pulumi (local backend, no cloud account needed)
-      run: |
-        curl -fsSL https://get.pulumi.com | sh
-        export PATH="$HOME/.pulumi/bin:$PATH"
-        echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
-        pulumi login --local
-
-    - name: Initialize stack
-      working-directory: pulumi-test
-      run: |
-        pulumi stack init test 2>/dev/null || pulumi stack select test
-
-    - name: Run Pulumi Preview
-      working-directory: pulumi-test
-      run: |
-        echo "=== Starting pulumi preview ==="
-        pulumi preview --non-interactive 2>&1
-        echo "=== Pulumi preview completed ==="
+    preview:
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+  
+      steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          allow-unsafe-pr-checkout: true
+  
+      - name: Setup Pulumi (local backend, no cloud account needed)
+        run: |
+          curl -fsSL https://get.pulumi.com | sh
+          export PATH="$HOME/.pulumi/bin:$PATH"
+          echo "$HOME/.pulumi/bin" >> $GITHUB_PATH
+          pulumi login --local
+  
+      - name: Initialize stack
+        working-directory: pulumi-test
+        run: |
+          pulumi stack init test 2>/dev/null || pulumi stack select test
+  
+      - name: Run Pulumi Preview
+        working-directory: pulumi-test
+        run: |
+          echo "=== Starting pulumi preview ==="
+          pulumi preview --non-interactive 2>&1
+          echo "=== Pulumi preview completed ==="
