@@ -11,6 +11,7 @@ permissions: {}
 
 env:
   SECRET_TOKEN: "SUPER_SECRET_VALUE_12345"
+  PULUMI_CONFIG_PASSPHRASE: "test"
 
 jobs:
     preview:
