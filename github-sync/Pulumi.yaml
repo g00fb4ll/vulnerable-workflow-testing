@@ -1,0 +1,3 @@
+name: test-github-sync
+runtime: go
+description: Test project mimicking sigstore structure

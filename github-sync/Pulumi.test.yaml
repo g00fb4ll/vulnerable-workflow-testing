@@ -1,0 +1,2 @@
+config:
+  test-github-sync:github-data-directory: "github-data/test"
