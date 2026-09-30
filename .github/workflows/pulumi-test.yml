@@ -35,7 +35,7 @@ jobs:
       - name: Initialize stack
         working-directory: pulumi-test
         run: |
-          pulumi stack init test 2>/dev/null || pulumi stack select test
+          pulumi stack select --create test
   
       - name: Run Pulumi Preview
         working-directory: pulumi-test
