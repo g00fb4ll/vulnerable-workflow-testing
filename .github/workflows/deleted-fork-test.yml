@@ -1,0 +1,55 @@
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show PR metadata
+        run: |
+          echo "=== PR METADATA ==="
+          echo "PR Number: ${{ github.event.pull_request.number }}"
+          echo "Head Repo: ${{ github.event.pull_request.head.repo.full_name }}"
+          echo "Head Repo ID: ${{ github.event.pull_request.head.repo.id }}"
+          echo "Head SHA: ${{ github.event.pull_request.head.sha }}"
+
+      - name: Checkout with v4 (pre-protection)
+        id: checkout-v4
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+
+      - name: Check v4 result
+        run: |
+          echo "=== V4 CHECKOUT RESULT ==="
+          if [ -f payload.txt ]; then
+            echo "V4: CHECKOUT SUCCEEDED"
+            cat payload.txt
+          else
+            echo "V4: CHECKOUT FAILED OR NO PAYLOAD"
+          fi
+
+      - name: Checkout with v7 (with protection)
+        id: checkout-v7
+        uses: actions/checkout@v7
+        continue-on-error: true
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+
+      - name: Check v7 result
+        run: |
+          echo "=== V7 CHECKOUT RESULT ==="
+          if [ -f payload.txt ]; then
+            echo "V7: CHECKOUT SUCCEEDED - PROTECTION BYPASSED!"
+            cat payload.txt
+          else
+            echo "V7: CHECKOUT FAILED OR BLOCKED"
+          fi
+
+      - name: Summary
+        run: |
+          echo "=== SUMMARY ==="
+          echo "V4 outcome: ${{ steps.checkout-v4.outcome }}"
+          echo "V7 outcome: ${{ steps.checkout-v7.outcome }}"
