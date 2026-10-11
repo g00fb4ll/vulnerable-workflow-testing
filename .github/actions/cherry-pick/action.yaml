@@ -1,0 +1,31 @@
+name: 'Cherry Pick (Vulnerable)'
+description: 'Demonstrates script injection via template interpolation'
+
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+  target-branch:
+    description: 'Target branch for cherry-pick'
+    required: true
+  merge-commit:
+    description: 'Merge commit SHA'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Process branch
+      shell: bash
+      run: |
+        echo "=== TARGET BRANCH PROCESSING ==="
+        echo "Token prefix: ${GH_TOKEN:0:15}..."
+
+        # VULNERABLE: ${{ inputs.target-branch }} interpolated before shell runs
+        IFS=',' read -ra BRANCHES <<< "${{ inputs.target-branch }}"
+
+        echo "Branches parsed: ${BRANCHES[*]}"
+        echo "Merge commit: ${{ inputs.merge-commit }}"
+        echo "=== IF YOU SEE COMMAND OUTPUT ABOVE, VULN CONFIRMED ==="
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
