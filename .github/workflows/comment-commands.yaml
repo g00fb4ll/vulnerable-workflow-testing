@@ -1,0 +1,61 @@
+name: Comment Commands (Kyverno CVE Demo)
+
+permissions: {}
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  cherry-pick:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, '/cherry-pick')
+    permissions:
+      contents: write
+    steps:
+      - name: Check if PR is merged
+        uses: actions/github-script@v7
+        id: check-merged
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            return { merged: pr.data.merged, mergeCommit: pr.data.merge_commit_sha };
+
+      - name: Extract target branch
+        if: fromJSON(steps.check-merged.outputs.result).merged == true
+        id: extract-branch
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          set -euo pipefail
+          candidate="$(printf '%s' "$COMMENT_BODY" | head -n1 | awk '{print $2}')"
+
+          if [ -z "${candidate:-}" ]; then
+            echo "::error::No branch specified"; exit 1
+          fi
+
+          # INSUFFICIENT - $() passes validation!
+          if ! git check-ref-format --branch "$candidate"; then
+            echo "::error::Invalid branch: $candidate"; exit 1
+          fi
+
+          echo "branch=$candidate" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: fromJSON(steps.check-merged.outputs.result).merged == true
+        with:
+          fetch-depth: 0
+
+      - name: Cherry Pick
+        if: fromJSON(steps.check-merged.outputs.result).merged == true
+        uses: ./.github/actions/cherry-pick
+        with:
+          github-token: ${{ secrets.CHERRY_PICK_TOKEN }}
+          target-branch: ${{ steps.extract-branch.outputs.branch }}
+          merge-commit: ${{ fromJson(steps.check-merged.outputs.result).mergeCommit }}
